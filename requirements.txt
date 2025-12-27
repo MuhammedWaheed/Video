@@ -4,3 +4,4 @@ transformers
 torch
 huggingface-hub
 requests
+sentencepiece
