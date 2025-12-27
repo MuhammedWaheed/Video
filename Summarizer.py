@@ -91,14 +91,23 @@ def get_youtube_transcript(video_url: str, languages=("en", "ar")) -> str:
 # Load Summarization Model
 # =========================
 @st.cache_resource
+@st.cache_resource
 def load_summarizer():
+    from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+    
+    model_name = "csebuetnlp/mT5_multilingual_XLSum"
+    
+    # Load tokenizer with use_fast=False to avoid SentencePiece conversion issues
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+    model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+    
     return pipeline(
         task="text2text-generation",
-        model="csebuetnlp/mT5_multilingual_XLSum",
-        tokenizer="csebuetnlp/mT5_multilingual_XLSum",
-        device=-1,      # CPU is safest for Streamlit + mT5
+        model=model,
+        tokenizer=tokenizer,
+        device=-1,
         framework="pt"
-    )
+    ))
 
 # =========================
 # Summarize Long Text
@@ -169,3 +178,4 @@ def main():
 # =========================
 if __name__ == "__main__":
     main()
+
